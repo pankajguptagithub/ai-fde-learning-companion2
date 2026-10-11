@@ -13,3 +13,10 @@ def ask_model(user_text: str) -> str:
             input=user_text,
             )
     return response.output_text
+
+def safe_ask(user_text: str) -> str:
+    try:
+        return ask_model(user_text)
+    except Exception as exc:
+        #During development, log class and request id if available
+        raise RuntimeError("Model request failed") from exc
