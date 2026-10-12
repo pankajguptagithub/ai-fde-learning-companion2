@@ -20,3 +20,13 @@ def safe_ask(user_text: str) -> str:
     except Exception as exc:
         #During development, log class and request id if available
         raise RuntimeError("Model request failed") from exc
+
+client = OpenAI()
+response = client.responses.parse(
+    model = settings.openai_model,
+    instructions = TUTOR_SYSTEM,
+    input = "Teach reranking to a learner who understands vector search",
+    text_format = TutorTurn,
+)
+turn = response.output_parsed
+

@@ -1,5 +1,6 @@
 from pydantic import BaseModel, Field
 from typing import Literal
+from openai import OpenAI
 
 class LessonRequest(BaseModel):
     topic: str=Field(min_length=2,max_length=120)
@@ -17,13 +18,3 @@ class TutorTurn(BaseModel):
     diagnostic_question: str
     prerequisites_missing: list[str] = []
     confidence: float = Field(ge=0, le=1)
-
-
-client = OpenAI()
-response = client.responses.parse(
-    model = settings.openai_model,
-    instructions = TUTOR_SYSTEM,
-    input = "Teach reranking to a learner who understands vector search",
-    text_format = TutorTurn,
-)
-turn = response.output_parsed
