@@ -3,6 +3,7 @@ from openai import OpenAI
 from companion.config import settings
 from companion.prompts import TUTOR_SYSTEM
 from companion.context import build_context
+from companion.schemas import AnswerEvaluation
 
 client = OpenAI(api_key=settings.openai_api_key)
 
@@ -63,3 +64,29 @@ def safe_ask(user_text: str) -> str:
 #)
 #turn = response.output_parsed
 
+def evaluate_answer(
+    topic: str,
+    lesson: str,
+    learner_answer: str
+)-> AnswerEvaluation:
+
+    response = client.responses.parse(
+        model = settings.openai_model,
+        instructions=(
+            "Evaluate the learner's answer accurately"
+            "Return structured feedback and a score from 0 to 1"
+        ),
+        input = f"""
+    Topic:
+    {topic}
+
+    Lesson and question:
+    {lesson}
+
+    Learner's answer:
+    {learner_answer}
+    """,
+        text_format=AnswerEvaluation,
+    )
+
+    return response.output_parsed

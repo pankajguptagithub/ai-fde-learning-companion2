@@ -18,3 +18,29 @@ class TutorTurn(BaseModel):
     diagnostic_question: str
     prerequisites_missing: list[str] = []
     confidence: float = Field(ge=0, le=1)
+
+class AnswerEvaluation(BaseModel):
+    score: float = Field(ge=0, le=1)
+    correct_points: list[str]
+    missing_points: list[str]
+    misconception: str | None = None
+    feedback: str
+    recommended_action: Literal["retry","reteach","advance"]
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
