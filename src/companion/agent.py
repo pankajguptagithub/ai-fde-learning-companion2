@@ -1,14 +1,16 @@
 from langchain.chat_models import init_chat_model
 from langchain.agents import create_agent
 from companion.config import settings
+from langchain_openai import ChatOpenAI
 
 from companion.tools import(
         get_learning_profile,
         save_learning_attempt,
 )
 
-model = init_chat_model(
-    f"openai:{settings.openai_model}",
+
+model = ChatOpenAI(
+    model = settings.openai_model,
     temperature=0,
     api_key=settings.openai_api_key,
 )
