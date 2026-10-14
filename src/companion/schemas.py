@@ -26,21 +26,3 @@ class AnswerEvaluation(BaseModel):
     misconception: str | None = None
     feedback: str
     recommended_action: Literal["retry","reteach","advance"]
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
