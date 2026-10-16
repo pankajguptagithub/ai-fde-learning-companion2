@@ -1,0 +1,33 @@
+
+============================================================
+SCENARIO 1: CORRECT ON FIRST ATTEMPT
+============================================================
+Final lesson: RAG works in two stages retrieves relevant external informationand provides it to the model before generation
+Final question: Attempt 1:What are the two main components involved in RAG?
+Final answer: ['RAG combines retreival from an external knowledge basewith generation by an LLM']
+Total attempts: 1
+Evaluation: {'score': 0.9, 'feedback': 'Correct: RAG combines retrieval and generation'}
+Next action: advance
+Final message: Concept understood.You can advance
+
+============================================================
+SCENARIO 2: RETRY THEN CORRECT
+============================================================
+Final lesson: Think of RAG as two steps: first retrieve relevantinformation, then let the model generate an answer
+Final question: Attempt 2:What are the two main components involved in RAG?
+Final answer: ['RAG uses a knowledge base', 'RAG combines retrieval of external informationwith generation by a model']
+Total attempts: 2
+Evaluation: {'score': 0.9, 'feedback': 'Correct: RAG combines retrieval and generation'}
+Next action: advance
+Final message: Concept understood.You can advance
+
+============================================================
+SCENARIO 3: MAXIMUM ATTEMPTS REACHED
+============================================================
+Final lesson: Think of RAG as two steps: first retrieve relevantinformation, then let the model generate an answer
+Final question: Attempt 3:What are the two main components involved in RAG?
+Final answer: ['RAG is a database', 'RAG stores documents', 'RAG is an AI application']
+Total attempts: 3
+Evaluation: {'score': 0.2, 'feedback': 'Incorrect. Review retrieval and generation'}
+Next action: stop
+Final message: Maximum attempts reached. Review the concept again

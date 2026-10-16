@@ -1,4 +1,7 @@
 from typing import TypedDict, Literal
+from companion.retrieval import retrieve
+from companion.memory import get_attempts,save_attempt
+from companion.context import build_context
 
 from langgraph.graph import StateGraph, START, END
 
@@ -8,6 +11,8 @@ class LearningState(TypedDict, total=False):
     mode: Literal["teach","quiz","review"]
     profile: dict
     evidence: list[dict]
+    history: list[dict]
+    context: str
     lesson: str
     question: str
     learner_answers: list[str]
@@ -20,24 +25,48 @@ class LearningState(TypedDict, total=False):
     errors: list[str]
 
 def load_context(state: LearningState) -> dict:
+    user_id = state.get("user_id","user123")
+    topic = state["topic"]
+
+    profile = {
+        "goal" : "AI FDE",
+        "strengths" : ["Scripting","System Design"],
+        "gaps": ["RAG","Agentic AI"],
+    }
+
+    chunks = retrieve(topic)
+
+    history = get_attempts(
+        user_id = user_id,
+        topic = topic,
+    )
+
+    session = {
+        "topic": topic,
+        "attempts": state.get("attempts",0)
+    }
+
+    context_packet = build_context(
+        profile = profile,
+        session = session,
+        chunks = chunks,
+        attempts = history,
+        task = f"Teach and evaluate the learner on {topic}",
+    
+    )
+
     return {
-        "profile":{
-            "goal" : "AI FDE",
-            "strengths" : ["Scripting","System Design"],
-            "gaps": ["RAG","Agentic AI"],
-        },
-        "evidence":[
-            {
-                "id": "rag-001",
-                "text": (
-                    "RAG combines retrieval from an external"
-                    "knowledge source with model generation"
-                ),
-            }
-        ],
-    } 
-
-
+        "profile" : profile,
+        "evidence": chunks,
+        "history": history,
+        "context": (
+            f"{context_packet.learner}\n\n"
+            f"{context_packet.session}\n\n"
+            f"{context_packet.evidence}\n\n"
+            f"{context_packet.history}\n\n"
+            f"{context_packet.task}\n\n"
+        ),
+    }
 def teach(state: LearningState) -> dict:
     return{
         "lesson":(
@@ -94,6 +123,12 @@ def evaluate_answer(state: LearningState) -> dict:
     else:
         score = 0.2
         feedback = "Incorrect. Review retrieval and generation"
+
+    save_attempt(
+        user_id = state.get("user_id","user123"),
+        topic = state["topic"],
+        score = score,
+    )
     
     return {
         "current_answer" : answer,
