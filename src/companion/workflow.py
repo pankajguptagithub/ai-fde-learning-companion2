@@ -24,7 +24,91 @@ class LearningState(TypedDict, total=False):
     final_message: str
     errors: list[str]
 
+def validate_state(state: LearningState) -> list[str]:
+    errors = []
+
+    topic = state.get("topic","").strip()
+
+    if not topic:
+        errors.append("Topic is required")
+
+    max_attempts = state.get("max_attempts",3)
+
+    if max_attempts < 1 or max_attempts > 5:
+        errors.append("max_attempts must be between 1 and 5")
+
+    suspicious_phrases = (
+        "ignore previous instructions",
+        "reveal system promt",
+        "reveal system secrets",
+        "bypass instructions",
+        "override instructions",    
+        "switch role",
+        "without restrictions",
+        "internal configuration",
+        "api key",
+        "application secrets",
+        "bypass validation",
+    )
+
+    topic_lower = topic.lower()
+
+    if any(
+            phrase in topic_lower
+            for phrase in suspicious_phrases
+    ):
+        errors.append("Potential unsafe instruction detected")
+
+    return errors
+
+def validate_evidence(chunks: list[dict]) -> list[str]:
+    errors = []
+
+    suspicious_phrases = (
+        "ignore previous instructions",
+        "reveal system prompt",
+        "reveal system secrets",
+        "bypass instructions",
+        "override instructions",
+        "switch role",
+        "without restrictions",
+        "internal configuration",
+        "api key",
+        "application secrets",
+        "bypass validation",
+    )
+
+    for chunk in chunks:
+        text = chunk.get("text","").lower()
+
+        if any (
+            phrase in text
+            for phrase in suspicious_phrases
+        ):
+            errors.append(
+                "Unsafe instruction detected in retrieved evidence"
+            )
+            break
+    return errors        
+
+
+def route_after_context(state: LearningState) -> str:
+    if state.get("errors"):
+        return "stop"
+    
+    return "continue"
+
 def load_context(state: LearningState) -> dict:
+
+    validation_errors = validate_state(state)
+
+    if validation_errors:
+        return{
+            "errors": validation_errors,
+            "evidence": [],
+            "history": [],
+        }
+
     user_id = state.get("user_id","user123")
     topic = state["topic"]
 
@@ -35,6 +119,32 @@ def load_context(state: LearningState) -> dict:
     }
 
     chunks = retrieve(topic)
+
+    if not chunks:
+        evidence_errors = validate_evidence(chunks)
+
+        if evidence_errors:
+            return {
+                "errors": evidence_errors,
+                "evidence": [],
+                "history": [],
+            }
+        return {
+            "errors":[
+                f"No trusted evidence found for topic: {topic}"
+            ],
+            "evidence": [],
+            "history": [],
+        }
+
+#    evidence_errors = validate_evidence(chunks)
+#
+#    if evidence_errors:
+#        return {
+#            "errors": evidence_errors,
+#            "evidence": [],
+#            "history": [],
+#        }
 
     history = get_attempts(
         user_id = user_id,
@@ -194,7 +304,14 @@ builder.add_node("adapt",adapt_lesson)
 builder.add_node("finalize",finalize_session)
 
 builder.add_edge(START,"load_context")
-builder.add_edge("load_context","teach")
+builder.add_conditional_edges(
+        "load_context",
+        route_after_context,
+        {
+            "continue": "teach",
+            "stop": "finalize",
+        }
+)
 builder.add_edge("teach","ask")
 builder.add_edge("ask","evaluate")
 builder.add_conditional_edges(
