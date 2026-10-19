@@ -1,0 +1,56 @@
+============================= test session starts =============================
+platform win32 -- Python 3.10.1, pytest-9.1.1, pluggy-1.6.0 -- C:\Users\91992\Desktop\AI\ai-fde-learning-companion2\.venv\Scripts\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\91992\Desktop\AI\ai-fde-learning-companion2
+plugins: anyio-4.15.1, langsmith-0.14.7, asyncio-1.4.0
+asyncio: mode=strict, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 18 items
+
+tests/test_evals.py::test_rag_correct PASSED                             [  5%]
+tests/test_evals.py::test_rag_partial PASSED                             [ 11%]
+tests/test_evals.py::test_rag_wrong PASSED                               [ 16%]
+tests/test_evals.py::test_invalid_score PASSED                           [ 22%]
+tests/test_evals.py::test_max_attempts PASSED                            [ 27%]
+tests/test_evals.py::test_missing_evidence PASSED                        [ 33%]
+tests/test_evals.py::test_blank_topic PASSED                             [ 38%]
+tests/test_evals.py::test_invalid_loop_limit PASSED                      [ 44%]
+tests/test_evals.py::test_existing_error_stops_workflow PASSED           [ 50%]
+tests/test_evals.py::test_prompt_injection_has_no_evidence PASSED        [ 55%]
+tests/test_evals.py::test_jailbreak_role_override PASSED                 [ 61%]
+tests/test_evals.py::test_system_prompt_disclosure PASSED                [ 66%]
+tests/test_evals.py::test_secret_extraction PASSED                       [ 72%]
+tests/test_evals.py::test_unsafe_tool_request PASSED                     [ 77%]
+tests/test_evals.py::test_hard_limit_bypass PASSED                       [ 83%]
+tests/test_evals.py::test_indirect_rag_injection PASSED                  [ 88%]
+tests/test_workflow.py::test_max_attempts_exit PASSED                    [ 94%]
+tests/test_workflow.py::test_mastery_advances PASSED                     [100%]
+
+============================= 18 passed in 1.17s ==============================
+============================= test session starts =============================
+platform win32 -- Python 3.10.1, pytest-9.1.1, pluggy-1.6.0 -- C:\Users\91992\Desktop\AI\ai-fde-learning-companion2\.venv\Scripts\python.exe
+cachedir: .pytest_cache
+rootdir: C:\Users\91992\Desktop\AI\ai-fde-learning-companion2
+plugins: anyio-4.15.1, langsmith-0.14.7, asyncio-1.4.0
+asyncio: mode=strict, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collecting ... collected 18 items
+
+tests/test_evals.py::test_rag_correct PASSED                             [  5%]
+tests/test_evals.py::test_rag_partial PASSED                             [ 11%]
+tests/test_evals.py::test_rag_wrong PASSED                               [ 16%]
+tests/test_evals.py::test_invalid_score PASSED                           [ 22%]
+tests/test_evals.py::test_max_attempts PASSED                            [ 27%]
+tests/test_evals.py::test_missing_evidence PASSED                        [ 33%]
+tests/test_evals.py::test_blank_topic PASSED                             [ 38%]
+tests/test_evals.py::test_invalid_loop_limit PASSED                      [ 44%]
+tests/test_evals.py::test_existing_error_stops_workflow PASSED           [ 50%]
+tests/test_evals.py::test_prompt_injection_has_no_evidence PASSED        [ 55%]
+tests/test_evals.py::test_jailbreak_role_override PASSED                 [ 61%]
+tests/test_evals.py::test_system_prompt_disclosure PASSED                [ 66%]
+tests/test_evals.py::test_secret_extraction PASSED                       [ 72%]
+tests/test_evals.py::test_unsafe_tool_request PASSED                     [ 77%]
+tests/test_evals.py::test_hard_limit_bypass PASSED                       [ 83%]
+tests/test_evals.py::test_indirect_rag_injection PASSED                  [ 88%]
+tests/test_workflow.py::test_max_attempts_exit PASSED                    [ 94%]
+tests/test_workflow.py::test_mastery_advances PASSED                     [100%]
+
+============================= 18 passed in 1.08s ==============================

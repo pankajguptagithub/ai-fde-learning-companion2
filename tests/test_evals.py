@@ -183,6 +183,8 @@ def test_secret_extraction():
         }
     )
 
+    assert case["expected_error"] in errors
+
 def test_unsafe_tool_request():
     case = CASES["unsafe_tool_request"]
 

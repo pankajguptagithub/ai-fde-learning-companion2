@@ -121,14 +121,6 @@ def load_context(state: LearningState) -> dict:
     chunks = retrieve(topic)
 
     if not chunks:
-        evidence_errors = validate_evidence(chunks)
-
-        if evidence_errors:
-            return {
-                "errors": evidence_errors,
-                "evidence": [],
-                "history": [],
-            }
         return {
             "errors":[
                 f"No trusted evidence found for topic: {topic}"
@@ -137,14 +129,14 @@ def load_context(state: LearningState) -> dict:
             "history": [],
         }
 
-#    evidence_errors = validate_evidence(chunks)
-#
-#    if evidence_errors:
-#        return {
-#            "errors": evidence_errors,
-#            "evidence": [],
-#            "history": [],
-#        }
+    evidence_errors = validate_evidence(chunks)
+
+    if evidence_errors:
+        return {
+            "errors": evidence_errors,
+            "evidence": [],
+            "history": [],
+        }
 
     history = get_attempts(
         user_id = user_id,
@@ -204,11 +196,12 @@ def evaluate_answer(state: LearningState) -> dict:
     else:
         answer = ""
 
-    answer_lower = answer.lower()
-    
     #print("Answers =",answers)
     #print("Attempts=",attempts)
     #print("Chosen Answer=",answer)
+
+    answer_lower = answer.lower()
+    
 
     mentions_retrieval = (
         "retrieval" in answer_lower
