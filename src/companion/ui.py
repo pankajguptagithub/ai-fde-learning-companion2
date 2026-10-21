@@ -5,7 +5,11 @@ st.title("AI FDE Learning Companion")
 
 user_id = st.text_input("User ID")
 topic = st.text_input("Topic")
-answer = st.text_area("Your Answer")
+
+if "lesson_data" not in st.session_state:
+    st.session_state.lesson_data = None
+
+#answer = st.text_area("Your Answer")
 
 if st.button("Start Learning"):
     response = requests.post(
@@ -19,6 +23,8 @@ if st.button("Start Learning"):
             "max_attempts": 3,
         },
     )
+
+    st.session_state.lesson_dta = response.json()
 
     #st.json(response.json())
     data = response.json()
