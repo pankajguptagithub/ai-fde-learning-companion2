@@ -1,64 +1,97 @@
 import streamlit as st
 import requests 
 
-st.title("AI FDE Learning Companion")
+API_URL = "http://127.0.0.1:8000/learn"
 
-user_id = st.text_input("User ID")
-topic = st.text_input("Topic")
+st.set_page_config(
+    page_title="AI FDE learning companion",
+)
+
+st.title("AI FDE Learning Companion")
 
 if "lesson_data" not in st.session_state:
     st.session_state.lesson_data = None
 
+if "result_data" not in st.session_state:
+    st.session_state.result_data = None
+
+user_id = st.text_input("User ID")
+topic = st.text_input("Topic")
+
+
 if st.button("Start Learning"):
-    response = requests.post(
-        "http://127.0.0.1:8000/learn",
-        json = {
-            "user_id": user_id,
-            "topic": topic,
-            "mode": "quiz",
-            #"learner_answers": ["Retrieval and Generation"],
-            "learner_answers": [],
-            "max_attempts": 3,
-        },
-    )
+    if not user_id.strip() or not topic.strip():
+        st.warning("Please enter both User ID and Topic")
+    else:
+        try:
+            with st.spinner("Loading lesson..."):
+                response = requests.post(
+                        API_URL,
+                        json = {
+                            "user_id": user_id.strip(),
+                            "topic": topic.strip(),
+                            "mode": "quiz",
+                            #"learner_answers": ["Retrieval and Generation"],
+                            "learner_answers": [],
+                            "max_attempts": 3,
+                        },
+                        timeout = 30,
+                )
 
-    st.write(response.status_code)
-    st.write(response.json())
+                response.raise_for_status()
 
-    st.session_state.lesson_dta = response.json()
+                st.session_state.lesson_data = response.json()
+                st.session_state.result_data = None
+        
+        except requests.exceptions.RequestException as exc:
+            st.error(f"Unable to connect to the learning API: {exc}")
+
 
 if st.session_state.lesson_data:
+    lesson_data = st.session_state.lesson_data
 
-    data = st.session_state.lesson_data
+    errors = lesson_data.get("errors", [])
 
-    st.subheader("Lesson")
-    st.write(data.get("lesson",""))
+    if errors:
+        st.error("\n".join(errors))
+    else:
+        st.subheader("Lesson")
+        st.write(lesson_data.get("lesson", "Lesson not available"))
 
     st.subheader("Question")
-    st.write(data.get("question",""))
+    st.write(lesson_data.get("question", "Question not available"))
 
     answer = st.text_area("Your Answer")
 
-
     if st.button("Submit Answer"):
-        response = requests.post(
-            "http://127.0.0.1:8000/learn",
-            json = {
-                "user_id": user_id,
-                "topic": topic,
-                "mode": "quiz",
-                "learner_answers": [answer],
-                "max_attempts": 3,
-            },
-        )
+        if not answer.strip():
+            st.warning("Please enter your answer")
+        else:
+            try:
+                with st.spinner("Evaluating answer..."):
+                    response = requests.post(
+                        API_URL,
+                        json = {
+                            "user_id": user_id.strip(),
+                            "topic": topic.strip(),
+                            "mode": "quiz",
+                            "learner_answers": [answer.strip()],
+                            "max_attempts":3,
+                        },
+                        timeout=30,
+                    )
 
-        result = response.json
+                    response.raise_for_status()
+                    st.session_state.result_data = response.json()
+            except request.exceptions.RequestException as exc:
+                st.error(f"Unable to connect to the learning API : {exc}")
 
-        st.subheader("Score")
-        st.write(data.get("evaluation",{}).get("score"))
 
-        st.subheader("Feedback")
-        st.write(data.get("evaluation",{}).get("feedback"))
+if st.session_state.result_data:
+    result = st.session_state.result_data
+    evaluation = result.get("evaluation",{})
 
-        st.subheader("Next Action")
-        st.write(result.get("next_action"))
+    st.subheader("Result")
+    st.write("**Score:**",evaluation.get("score","Not available"))
+    st.write("**Feedback:**",evaluation.get("feedback","Not available"))
+    st.write("**Next Action**",result.get("next_action","Not available"))
