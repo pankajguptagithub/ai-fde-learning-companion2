@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
 from typing import Literal
-
+from companion.model import safe_ask
 from companion.workflow import graph
 
 app = FastAPI(
@@ -17,11 +17,21 @@ class LearnRequest(BaseModel):
     learner_answers: list[str] = []
     max_attempts: int = Field(default=3, ge=1, le=5)
 
+class ChatRequest(BaseModel):
+    question: str = Field(min_length=1)
 
 @app.get("/health")
 def health():
     return {"status": "ok"}
 
+@app.post("/chat")
+def chat(request: ChatRequest):
+    answer = safe_ask(request.question)
+
+    return{
+        "question": request.question,
+        "answer": answer,
+    }
 
 @app.post("/learn")
 def learn(request: LearnRequest):

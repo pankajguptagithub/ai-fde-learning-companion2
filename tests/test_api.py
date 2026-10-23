@@ -82,3 +82,19 @@ def test_learn_rejects_invalid_max_attempts():
         }
     )
     assert response.status_code == 422
+
+def test_chat_endpoint():
+    response = client.post(
+        "/chat",
+        json={
+            "question": "What is RAG?"
+        },
+    
+    )
+
+    assert response.status_code == 200
+
+    data = response.json()
+
+    assert data["question"] == "What is RAG?"
+    assert data["answer"] == "TEMPORARY_RESPONSE"
