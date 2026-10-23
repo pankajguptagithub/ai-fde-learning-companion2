@@ -187,6 +187,15 @@ def ask_question(state: LearningState) -> dict:
         )
     }
 
+def route_after_question(state: LearningState)-> str:
+    attempts = state.get("attempts",0)
+    answers = state.get("learner_answers",[])
+
+    if attempts < len(answers):
+        return "evaluate"
+
+    return "wait"
+
 def evaluate_answer(state: LearningState) -> dict:
     attempts = state.get("attempts",0)
     answers = state.get("learner_answers",[])
@@ -306,7 +315,15 @@ builder.add_conditional_edges(
         }
 )
 builder.add_edge("teach","ask")
-builder.add_edge("ask","evaluate")
+#builder.add_edge("ask","evaluate")
+builder.add_conditional_edges(
+    "ask",
+    route_after_question,
+    {
+        "evaluate": "evaluate",
+        "wait": END,
+    },
+)
 builder.add_conditional_edges(
         "evaluate",
         should_continue,
